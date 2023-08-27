@@ -1,7 +1,7 @@
 package main
 
-import "log"
-
 func main() {
-	log.Println("Hello World")
+	container := NewContainer(5, 5)
+
+	container.Print()
 }
