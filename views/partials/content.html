@@ -1,10 +1,29 @@
-<h1>Content</h1>
+{{if .finished}}
+<div>
+  <p>Finished</p>
+</div>
+{{end}} {{if .noSolution}}
+<div>
+  <p>No solution</p>
+</div>
+{{end}} {{if .show}}
+<div>
+  <form method="post" hx-post="/tick" hx-target="#content" hx-swap="outerHTML">
+    <button>Next Tick</button>
+  </form>
+</div>
 
-{{ if .noSolution }}
-<p>No solution found.</p>
-{{ end}} {{ if .finished }}
-<p>End reached</p>
-{{ end}} {{ range $row := .labels }}
+{{end}}
+
+<div>
+  <form method="post" hx-post="/reset" hx-target="#content" hx-swap="outerHTML">
+    <button>Reset</button>
+  </form>
+</div>
+
+<hr />
+
+{{ range $row := .labels }}
 <div class="row">
   {{ range $elem := $row }}
   <div class="col {{$elem}}"></div>

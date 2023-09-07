@@ -13,6 +13,8 @@ func main() {
 	})
 
 	app.Get("/", HandleIndex)
+	app.Post("/tick", HandleTick)
+	app.Post("/reset", HandleReset)
 
 	app.Listen(":3000")
 }

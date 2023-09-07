@@ -75,15 +75,15 @@ func (elem *GridElement) CalculareNeighbors(grid *Container) {
 	// 	elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X-1][elem.Y-1])
 	// }
 	//
-	// if elem.X < grid.Cols -1 && elem.Y > 0 {
+	// if elem.X < grid.Cols-1 && elem.Y > 0 {
 	// 	elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X+1][elem.Y-1])
 	// }
 	//
-	// if elem.X > 0 && elem.Y < grid.Cols -1 {
+	// if elem.X > 0 && elem.Y < grid.Cols-1 {
 	// 	elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X-1][elem.Y+1])
 	// }
 	//
-	// if elem.X < grid.Rows -1 && elem.Y < grid.Cols -1 {
+	// if elem.X < grid.Rows-1 && elem.Y < grid.Cols-1 {
 	// 	elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X+1][elem.Y+1])
 	// }
 }
@@ -148,6 +148,7 @@ func NewContainer(cols, rows int) *Container {
 		Path:      []*GridElement{},
 		Cols:      cols,
 		Rows:      rows,
+		Finished:  false,
 	}
 
 	for _, col := range container.Grid {
@@ -160,6 +161,10 @@ func NewContainer(cols, rows int) *Container {
 }
 
 func (c *Container) Tick() {
+	if c.Finished || c.NoSolution {
+		return
+	}
+
 	if len(c.OpenSet) == 0 {
 		c.NoSolution = true
 		return
@@ -198,7 +203,6 @@ func (c *Container) Tick() {
 		}
 	}
 
-	return nil
 }
 
 func (c *Container) RemoveFromOpenSet(toRemove *GridElement) {
