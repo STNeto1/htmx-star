@@ -1,0 +1,13 @@
+<h1>Content</h1>
+
+{{ if .noSolution }}
+<p>No solution found.</p>
+{{ end}} {{ if .finished }}
+<p>End reached</p>
+{{ end}} {{ range $row := .labels }}
+<div class="row">
+  {{ range $elem := $row }}
+  <div class="col {{$elem}}"></div>
+  {{ end }}
+</div>
+{{ end }}

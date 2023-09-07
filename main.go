@@ -1,23 +1,18 @@
 package main
 
 import (
-	"fmt"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
 )
 
 func main() {
-	container := NewContainer(25, 25)
+	engine := html.New("./views", ".html")
 
-	for true {
-		// container.Print()
-		// fmt.Println("===")
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
 
-		if err := container.Tick(); err != nil {
-			fmt.Println(err.Error())
-			break
-		}
+	app.Get("/", HandleIndex)
 
-		// time.Sleep(time.Millisecond * 500)
-	}
-
-	container.Print()
+	app.Listen(":3000")
 }

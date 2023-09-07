@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-	"fmt"
 	"math"
 	"math/rand"
 )
@@ -24,41 +22,39 @@ func (elem *GridElement) Compare(toCompare *GridElement) bool {
 
 func (elem *GridElement) Label(grid *Container) string {
 	if elem.Wall {
-		return "W"
+		return "wall"
 	}
 
 	if elem.Compare(grid.Start) {
-		return "S"
+		return "start"
 	}
 
 	if elem.Compare(grid.End) {
-		return "E"
+		return "end"
 	}
 
 	if grid.InPath(elem) {
-		return "P"
+		return "path"
 	}
 
 	for _, inner := range grid.OpenSet {
 		if elem.Compare(inner) {
-			return "O"
+			return "open"
 		}
 	}
 
 	for _, inner := range grid.ClosedSet {
 		if elem.Compare(inner) {
-			return "C"
+			return "closed"
 		}
 	}
 
-	return " "
+	return "void"
 }
 
 func (elem *GridElement) CalculareNeighbors(grid *Container) {
-	cols := len(grid.Grid)
-	rows := len(grid.Grid[0])
 
-	if elem.X < cols-1 {
+	if elem.X < grid.Cols-1 {
 		elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X+1][elem.Y])
 	}
 
@@ -66,7 +62,7 @@ func (elem *GridElement) CalculareNeighbors(grid *Container) {
 		elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X-1][elem.Y])
 	}
 
-	if elem.Y < rows-1 {
+	if elem.Y < grid.Rows-1 {
 		elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X][elem.Y+1])
 	}
 
@@ -79,15 +75,15 @@ func (elem *GridElement) CalculareNeighbors(grid *Container) {
 	// 	elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X-1][elem.Y-1])
 	// }
 	//
-	// if elem.X < cols-1 && elem.Y > 0 {
+	// if elem.X < grid.Cols -1 && elem.Y > 0 {
 	// 	elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X+1][elem.Y-1])
 	// }
 	//
-	// if elem.X > 0 && elem.Y < cols-1 {
+	// if elem.X > 0 && elem.Y < grid.Cols -1 {
 	// 	elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X-1][elem.Y+1])
 	// }
 	//
-	// if elem.X < rows-1 && elem.Y < cols-1 {
+	// if elem.X < grid.Rows -1 && elem.Y < grid.Cols -1 {
 	// 	elem.Neighbors = append(elem.Neighbors, grid.Grid[elem.X+1][elem.Y+1])
 	// }
 }
@@ -110,12 +106,16 @@ func NewElement(x, y int) *GridElement {
 }
 
 type Container struct {
-	Grid      [][]*GridElement // move to a pointer later?
-	OpenSet   []*GridElement
-	ClosedSet []*GridElement
-	Start     *GridElement
-	End       *GridElement
-	Path      []*GridElement
+	Grid       [][]*GridElement // move to a pointer later?
+	OpenSet    []*GridElement
+	ClosedSet  []*GridElement
+	Start      *GridElement
+	End        *GridElement
+	Path       []*GridElement
+	Cols       int
+	Rows       int
+	NoSolution bool
+	Finished   bool
 }
 
 func NewContainer(cols, rows int) *Container {
@@ -146,6 +146,8 @@ func NewContainer(cols, rows int) *Container {
 		Start:     start,
 		End:       end,
 		Path:      []*GridElement{},
+		Cols:      cols,
+		Rows:      rows,
 	}
 
 	for _, col := range container.Grid {
@@ -157,16 +159,16 @@ func NewContainer(cols, rows int) *Container {
 	return container
 }
 
-func (c *Container) Tick() error {
+func (c *Container) Tick() {
 	if len(c.OpenSet) == 0 {
-		return errors.New("no solution")
+		c.NoSolution = true
+		return
 	}
 
 	lowest := c.LowestInOpenSet()
 	if lowest.Compare(c.End) {
 		c.Backtrack()
-
-		return errors.New("end reached")
+		c.Finished = true
 	}
 
 	c.ClosedSet = append(c.ClosedSet, lowest)
@@ -256,13 +258,20 @@ func (c *Container) LowestInOpenSet() *GridElement {
 	return root
 }
 
-func (c *Container) Print() {
+func (c *Container) GetLabelGrid() [][]string {
+	result := [][]string{}
+
 	for _, col := range c.Grid {
-		for _, row := range col {
-			fmt.Printf("%s ", row.Label(c))
+		row := []string{}
+
+		for _, elem := range col {
+			row = append(row, elem.Label(c))
 		}
-		fmt.Println()
+
+		result = append(result, row)
 	}
+
+	return result
 }
 
 func (c *Container) Backtrack() {
