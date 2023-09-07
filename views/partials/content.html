@@ -11,6 +11,15 @@
   <form method="post" hx-post="/tick" hx-target="#content" hx-swap="outerHTML">
     <button>Next Tick</button>
   </form>
+
+  <form
+    method="post"
+    hx-post="/finish"
+    hx-target="#content"
+    hx-swap="outerHTML"
+  >
+    <button>Finish the game</button>
+  </form>
 </div>
 
 {{end}}

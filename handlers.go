@@ -13,13 +13,13 @@ func handleRender(c *fiber.Ctx, layout string) error {
 		"labels":     container.GetLabelGrid(),
 		"finished":   container.Finished,
 		"noSolution": container.NoSolution,
-		"show":       !container.NoSolution && !container.Finished,
+		"show":       container.ShouldContinue(),
 	}, layout)
 }
 
 func HandleIndex(c *fiber.Ctx) error {
 	if container == nil {
-		container = NewContainer(15, 15)
+		container = NewContainer(15, 30)
 	}
 
 	return handleRender(c, "layouts/main")
@@ -37,7 +37,19 @@ func HandleTick(c *fiber.Ctx) error {
 }
 
 func HandleReset(c *fiber.Ctx) error {
-	container = NewContainer(10, 10)
+	container = NewContainer(15, 30)
+
+	return handleRender(c, "")
+}
+
+func HandleFinish(c *fiber.Ctx) error {
+	for true {
+		if !container.ShouldContinue() {
+			break
+		}
+
+		container.Tick()
+	}
 
 	return handleRender(c, "")
 }

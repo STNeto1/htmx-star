@@ -289,3 +289,7 @@ func (c *Container) Backtrack() {
 		start = start.Previous
 	}
 }
+
+func (c *Container) ShouldContinue() bool {
+	return !c.Finished && !c.NoSolution
+}
