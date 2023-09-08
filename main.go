@@ -17,5 +17,8 @@ func main() {
 	app.Post("/reset", HandleReset)
 	app.Post("/finish", HandleFinish)
 
+	app.Get("/setup", HandleSetup)
+	app.Post("/setup", HandleSetup)
+
 	app.Listen(":3000")
 }

@@ -1,0 +1,11 @@
+<section id="content" class="container">
+  <form method="post" hx-post="/setup" hx-target="#content" hx-swap="outerHTML">
+    <label>Columns</label>
+    <input type="number" name="cols" value="10" />
+
+    <label>Rows</label>
+    <input type="number" name="rows" value="10" />
+
+    <button>Setup</button>
+  </form>
+</section>
